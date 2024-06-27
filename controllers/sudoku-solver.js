@@ -1,5 +1,7 @@
 class SudokuSolver {
-
+  constructor() {
+    this.actualPuzzle = "";
+  }
   validate(puzzleString) {
     // If the puzzleString is not 81 characters long
     if (puzzleString.length !== 81) {
@@ -73,7 +75,7 @@ class SudokuSolver {
       }
     }
 
-    let cell = puzzleString[(column - 1) * 9 + row - 1 ]
+    let cell = puzzleString[(column) * 9 + row ]
     // If the value is already in the cell
     if (cell === value) {
       return true;
@@ -92,42 +94,63 @@ class SudokuSolver {
   }
 
   solve(puzzleString) {
+    console.log(puzzleString)
+    this.actualPuzzle = puzzleString;
+
+    // Check if puzzle is solved
+    if (puzzleString.includes('.') === false) {
+      console.log("puzzle solved", puzzleString)
+      return puzzleString;
+    }
+
+    // Then create a copy of the puzzle
     let solvedPuzzle = [...puzzleString];
-    let solved = false;
- 
+    
+    // Create a tempory array to store the possible values
+    let temporarySol = []
+
+    // loop through the puzzle
     for (let i = 0; i < 81; i++) {
-      // Create a tempory array to store the possible values
-      let temporarySol = []
 
       // If the iteration is not a dot, then add the value to the temporary array
       if (solvedPuzzle[i] !== '.') {
-        temporarySol[i] = solvedPuzzle[i];
+        temporarySol.push(solvedPuzzle[i]);
       } 
       // If the iteration is a dot, then add the possible values to the temporary array
       else {
+        let possibleValues = [];
         // loop through the possible values
         for (let j = 1; j <= 9; j++) {
           // Check if the j value is valid in the location
           if (this.checkRowPlacement(solvedPuzzle, Math.floor(i / 9), i % 9, j.toString()) &&
               this.checkColPlacement(solvedPuzzle, Math.floor(i / 9), i % 9, j.toString()) &&
               this.checkRegionPlacement(solvedPuzzle, Math.floor(i / 9), i % 9, j.toString())) {
-            temporarySol[i].push(j.toString());
+            possibleValues.push(j.toString())
           }
         }
+        temporarySol.push(possibleValues);
       }
     }
 
-
-    // for (let k = 0; k < 81; k++) {
-    //   if (temporarySol[k].length === 1) {
-    //    temporarySol[k] = temporarySol[k][0];
-    //   } else {
-    //     temporarySol[k] = '.';
-    //   }
-    // }
+    // loop through the temporary array and if we have only one possible value, then add it to the solvedPuzzle
+    for (let k = 0; k < 81; k++) {
+      if (temporarySol[k].length === 1) {
+       temporarySol[k] = temporarySol[k][0];
+      } else {
+        temporarySol[k] = '.';
+      }
+    }
    
-    console.log(temporarySol)
+    let newPuzzle = temporarySol.join("");
 
+    // If previous puzzle is the same as the new puzzle, then return false
+    if (newPuzzle === this.actualPuzzle) {
+      return false;
+    } else {
+      // Recursively call the solve function
+      this.actualPuzzle = newPuzzle;
+      this.solve(temporarySol.join(""))
+    }
   }
 }
 
