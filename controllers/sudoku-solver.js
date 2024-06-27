@@ -10,7 +10,7 @@ class SudokuSolver {
     if (!regex.test(puzzleString)) {
       return { error: 'Invalid characters in puzzle' };
     } else {
-      return puzzleString;
+      return true;
     }
   }
 
@@ -47,7 +47,7 @@ class SudokuSolver {
     } 
 
     // If value present in the column  and the value is not in the cell
-    if (studiedCol.includes(value)  && studiedCol[row] === value) {
+    if (studiedCol.includes(value)  && studiedCol[row] !== value) {
       return false;
     } 
 
@@ -61,17 +61,29 @@ class SudokuSolver {
 
   checkRegionPlacement(puzzleString, row, column, value) {
     let studiedRegion = '';
+    
+    // Determine the region
     let regionRow = Math.floor(row / 3);
     let regionCol = Math.floor(column / 3);
+
+    // Determine the studiedRegion string
     for (let i = regionRow * 3; i < regionRow * 3 + 3; i++) {
       for (let j = regionCol * 3; j < regionCol * 3 + 3; j++) {
         studiedRegion += puzzleString[i * 9 + j];
       }
     }
-    // If value present in the region
-    if (studiedRegion.includes(value)) {
+
+    let cell = puzzleString[(column - 1) * 9 + row - 1 ]
+    // If the value is already in the cell
+    if (cell === value) {
+      return true;
+    }
+
+    // If value present in the region and the value is not in the cell
+    if (studiedRegion.includes(value) && cell !== value) {
       return false;
     } 
+
     // If the location is already filled
     else if (!studiedRegion[(row % 3) * 3 + (column % 3)] === ".") {
       return false;

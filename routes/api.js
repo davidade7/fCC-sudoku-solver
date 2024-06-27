@@ -8,20 +8,38 @@ module.exports = function (app) {
 
   app.route('/api/check')
     .post((req, res) => {
-      // console.log(req.body)
-      // let rowName = [A, B, C, D, E, F, G, H, I]
-      // let row = rowName.indewOf(req.body.coordinate[0]);
-      // let column = req.body.coordinate[1];
+      console.log(req.body)
+      
 
-      // SudokuSolver.
+      let validatePuzzle = solver.validate(req.body.puzzle)
+      
+      // If the puzzle is not valid
+      if (validatePuzzle !== true) {
+        return res.json(solver.validate(req.body.puzzle))
+      } 
+      
+      else {
+        let rowName = ["A", "B", "C", "D", "E", "F", "G", "H", "I"]
+        let row = rowName.indexOf(req.body.coordinate[0]);
+        let column = req.body.coordinate[1] - 1;
+        let conflit = [];
 
+        if (!solver.checkRowPlacement(req.body.puzzle, row, column, req.body.value)) {
+          conflit.push("row")
+        }
+        if (!solver.checkColPlacement(req.body.puzzle, row, column, req.body.value)) {
+          conflit.push("column")
+        }
+        if (!solver.checkRegionPlacement(req.body.puzzle, row, column, req.body.value)) {
+          conflit.push("region")
+        }
 
-
-
-      // { "valid": true }
-      // { "valid": false, "conflict": [ "row", "column" ] }
-      // { "valid": false, "conflict": [ "row", "region" ] }
-      // { "error": "Expected puzzle to be 81 characters long" }
+        if (conflit.length === 0) {
+          return res.json({ valid: true })
+        } else {
+          return res.json({ valid: false, conflict: conflit })
+        }
+      }
     });
     
   app.route('/api/solve')
