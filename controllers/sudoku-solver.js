@@ -99,10 +99,17 @@ class SudokuSolver {
   }
 
   solve(puzzleString) {
-    console.log(puzzleString)
+    // console.log(puzzleString)
+
+    // Check puzzle validity
+    if (this.validate(puzzleString) !== true) {
+      console.log("puzzle not valid")
+      return false;
+    }
 
     // Check if puzzle stored in the actualPuzzle is the same as the puzzleString, if so, puzzle can not be solved
     if (puzzleString === this.actualPuzzle) {
+      console.log("can't be solved")
       return false;
     }
 
