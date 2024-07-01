@@ -68,14 +68,16 @@ module.exports = function (app) {
 
       // response from solve method
       let returnedMessage = solver.solve(puzzleToSolve)
+
+      console.log('receive from solver >>', returnedMessage)
       
       // If the puzzle cannot be solved
       if (!returnedMessage) {
-        return res.json({ error: 'Puzzle cannot be solved' })
+        res.json({ error: 'Puzzle cannot be solved' })
       } 
       // If the puzzle is solved
       else {
-        return res.json({ solution: returnedMessage })
+        res.json({ solution: returnedMessage })
       }
     });
 };
